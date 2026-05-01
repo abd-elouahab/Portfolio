@@ -1,66 +1,63 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
+import { MouseProvider } from '@/hooks/use-mouse';
+import BootScreen from '@/components/BootScreen';
+import Nav from '@/components/Nav';
+import CustomCursor from '@/components/CustomCursor';
+import SideStreams from '@/components/SideStreams';
+import Hero from '@/components/sections/Hero';
+import About from '@/components/sections/About';
+import Projects from '@/components/sections/Projects';
+import Experience from '@/components/sections/Experience';
+import Skills from '@/components/sections/Skills';
+import Contact from '@/components/sections/Contact';
+import SectionDivider from '@/components/SectionDivider';
+import BackToTop from '@/components/BackToTop';
+import { useParallax } from '@/hooks/use-parallax';
+
+const NeuralBackground = dynamic(() => import('@/components/NeuralBackground'), { ssr: false });
+const NoiseOverlay     = dynamic(() => import('@/components/NoiseOverlay'),     { ssr: false });
 
 export default function Home() {
+  const [booting, setBooting] = useState(true);
+  useParallax(0.03);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <MouseProvider>
+      {/* Atmosphere layers */}
+      <NeuralBackground />
+      <NoiseOverlay />
+      <SideStreams />
+      <div className="color-band" />
+      <div className="color-band" />
+      <div className="color-band" />
+      <CustomCursor />
+
+      {/* Boot */}
+      {booting && <BootScreen onComplete={() => setBooting(false)} />}
+
+      {/* Navigation */}
+      {!booting && <Nav />}
+
+      {/* Main content — scrollable */}
+      <main className={`main${booting ? ' main--hidden' : ''}`}>
+        <Hero ready={!booting} />
+        <SectionDivider />
+        <About />
+        <SectionDivider />
+        <Projects />
+        <SectionDivider />
+        <Experience />
+        <SectionDivider />
+        <Skills />
+        <SectionDivider />
+        <Contact />
       </main>
-    </div>
+
+      {/* Back to top */}
+      {!booting && <BackToTop />}
+    </MouseProvider>
   );
 }
